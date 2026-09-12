@@ -241,6 +241,14 @@ typedef struct JPC_CollideShapeResult {
 typedef struct JPC_Body JPC_Body;
 
 ////////////////////////////////////////////////////////////////////////////////
+// String
+
+typedef struct JPC_String JPC_String;
+
+JPC_API void JPC_String_delete(JPC_String* self);
+JPC_API const char* JPC_String_c_str(JPC_String* self);
+
+////////////////////////////////////////////////////////////////////////////////
 // VertexList == Array<Float3> == std::vector<Float3>
 
 typedef struct JPC_VertexList JPC_VertexList;
@@ -275,6 +283,9 @@ JPC_API uint64_t JPC_Shape_GetSubShapeUserData(const JPC_Shape* self, JPC_SubSha
 
 JPC_API JPC_Vec3 JPC_Shape_GetCenterOfMass(const JPC_Shape* self);
 JPC_API float JPC_Shape_GetVolume(const JPC_Shape* self);
+
+JPC_API bool JPC_Shape_ScaleShape(JPC_Shape* inShape, JPC_Vec3 inScale, JPC_Shape** outShape, JPC_String** outError);
+JPC_API bool JPC_Shape_IsValidScale(JPC_Shape* inShape, JPC_Vec3 inScale);
 
 ////////////////////////////////////////////////////////////////////////////////
 // CompoundShape -> Shape -> RefTarget<Shape>
@@ -737,14 +748,6 @@ JPC_API JPC_DebugRendererSimple* JPC_DebugRendererSimple_new(
 	JPC_DebugRendererSimpleFns fns);
 
 JPC_API void JPC_DebugRendererSimple_delete(JPC_DebugRendererSimple* object);
-
-////////////////////////////////////////////////////////////////////////////////
-// String
-
-typedef struct JPC_String JPC_String;
-
-JPC_API void JPC_String_delete(JPC_String* self);
-JPC_API const char* JPC_String_c_str(JPC_String* self);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constraint -> RefTarget<Constraint>

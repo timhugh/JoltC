@@ -1624,6 +1624,27 @@ JPC_API JPC_SliderConstraint* JPC_SliderConstraintSettings_Create(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// ShapeSettings
+
+// Unpack a ShapeResult into a bool and two pointers to be friendlier to C.
+static bool HandleShapeResult(JPH::ShapeSettings::ShapeResult res, JPC_Shape** outShape, JPC_String** outError) {
+	if (res.HasError()) {
+		if (outError != nullptr) {
+			JPH::String* created = new JPH::String(std::move(res.GetError()));
+			*outError = to_jpc(created);
+		}
+
+		return false;
+	} else {
+		JPH::Ref<JPH::Shape> shape = res.Get();
+		shape->AddRef();
+		*outShape = to_jpc((JPH::Shape*)shape);
+
+		return true;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Shape -> RefTarget<Shape>
 
 // RefTarget<Shape>
@@ -1668,6 +1689,14 @@ JPC_API float JPC_Shape_GetVolume(const JPC_Shape* self) {
 	return to_jph(self)->GetVolume();
 }
 
+JPC_API bool JPC_Shape_ScaleShape(JPC_Shape* self, JPC_Vec3 inScale, JPC_Shape** outShape, JPC_String** outError) {
+	return HandleShapeResult(to_jph(self)->ScaleShape(to_jph(inScale)), outShape, outError);
+}
+
+JPC_API bool JPC_Shape_IsValidScale(JPC_Shape* self, JPC_Vec3 inScale) {
+	return to_jph(self)->IsValidScale(to_jph(inScale));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // CompoundShape
 
@@ -1687,27 +1716,6 @@ JPC_API uint32_t JPC_CompoundShape_GetSubShapeIndexFromID(
 	uint32_t res = to_jph(self)->GetSubShapeIndexFromID(JPC_SubShapeID_to_jph(inSubShapeID), jphRemainder);
 	*outRemainder = to_jpc(jphRemainder);
 	return res;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ShapeSettings
-
-// Unpack a ShapeResult into a bool and two pointers to be friendlier to C.
-static bool HandleShapeResult(JPH::ShapeSettings::ShapeResult res, JPC_Shape** outShape, JPC_String** outError) {
-	if (res.HasError()) {
-		if (outError != nullptr) {
-			JPH::String* created = new JPH::String(std::move(res.GetError()));
-			*outError = to_jpc(created);
-		}
-
-		return false;
-	} else {
-		JPH::Ref<JPH::Shape> shape = res.Get();
-		shape->AddRef();
-		*outShape = to_jpc((JPH::Shape*)shape);
-
-		return true;
-	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
